@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Sep  8 16:14:57 2020
-
 @author: grace
 """
 import pygame
@@ -24,6 +23,7 @@ cols = 10
 MARGIN = 5 #this will be the space between boxes
 
 board = np.ones((rows,cols))
+board[0][0] = 5
 board[1: -1, 1: -1] = 0
 
 pygame.init()
@@ -49,11 +49,13 @@ def draw(board):
         for col in range(cols):
             color = WHITE
             if board[row][col] == 2:
-                color = BLUE
+                color = RED 
             elif board[row][col] == 3:
-                color = RED
+                color = BLUE
             elif board[row][col] == 1:
                 color = GREEN
+            elif board[0][0]:
+                color = WHITE
             
             pygame.draw.rect(SCREEN, color, [(MARGIN + WIDTH) * col + MARGIN,
                  (MARGIN + HEIGHT) * row + MARGIN,
@@ -64,83 +66,65 @@ def draw(board):
 
 draw(board)
 
-#def move(player, r, board):
-#          print("{} goes {}").format(player, r)
-#          
-#          if r == "left" and (player.pos[1] - 1) != 0:
-#
-#            board[player.pos[0]][player.pos[1]] = 1
-#            board[player.pos[0]][player.pos[1]-1] = 2
-#
-#          elif r == "right" and (player.pos[1] + 1) != 9:
-#
-#            board[player.pos[0]][player.pos[1]] = 1
-#            board[player.pos[0]][player.pos[1]+1] = 2
-#
-#          elif r == "down" and (player.pos[0] + 1) !=  9:
-#
-#            board[player.pos[0]][player.pos[1]] = 1
-#            board[player.pos[0]+1][player.pos[1]] = 2
-#            
-#          elif r == "up" and (player.pos[0] - 1) != 0:
-#        
-#            board[player.pos[0]][player.pos[1]] = 1
-#            board[player.pos[0]-1][player.pos[1]] = 2
-#
-#          else:
-#            return player
-def test_move(player, newPos):
-        if newPos == '1':
-            #return 'failure'
-            player.put_result(1)
-        elif newPos == '3':
-            #return 'portal'
-            player.put_result(2)
-        else:
-            #return 'success'
-            player.put_result(0)
-            
-def move(player, r):
+def test_move(player, newPos, board):
     
-      print("{} goes {}").format(player.pos, r)
-      # print(type(AI[1]-1), "Hello")
-      newPos = (0,0)
+        if board[newPos[0]][newPos[1]] == 1: 
+        # board[player.pos[0]][player.pos[1]] == 1: #wall
+            print("wall")
+            player.put_result(player.results[1])
+            
+        elif board[newPos[0]][newPos[1]] == 3:
+        #board[player.pos[0]][player.pos[1]] == 3: #portal
+            print("portal")
+            player.put_result(player.results[2])
+            
+        else:
+            print("success")
+            player.put_result(player.results[0])
+            
+def move(player, r, board):
+    
+    print("{} goes {}").format(player.pos, r)
      
-      if r == "left":
-          newPos = (player.pos[0], player.pos[1]-1)
-          # print(f"{newPos} - {type(newPos)}")
+    if r == "left":
+      newPos = (player.pos[0], player.pos[1]-1)
+      test_move(player, newPos, board)
           
-      elif r == "right":   
-          # grid[AI[0]][AI[1]] = 2
-          newPos = (player.pos[0], player.pos[1]+1)
-          # print(f"{newPos} - {type(newPos)}")
-          
-      elif r == "down": 
-          # grid[AI[0]][AI[1]] = 2
-          newPos = (player.pos[0]+1, player.pos[1])
-          # print(f"{newPos} - {type(newPos)}")
-          
-      elif r == "up":         
-          # grid[AI[0]][AI[1]] = 2
-          newPos = (player.pos[0]-1, player.pos[1])
-          # print(f"{newPos} - {type(newPos)}")
+    elif r == "right":   
+      newPos = (player.pos[0], player.pos[1]+1)
+      test_move(player, newPos, board)
+      #print(newPos)
      
-      test_move(player, newPos)
-      
-      if player.last_result == 'success':
-          player.pos = newPos
-      elif player.last_result== 'portal':
-          player.pos = newPos
-      else:
-          player.last_result == 'failure'
+    elif r == "down": 
+      newPos = (player.pos[0]+1, player.pos[1])
+      test_move(player, newPos, board)
+      #print(newPos)
+          
+    elif r == "up":         
+      newPos = (player.pos[0]-1, player.pos[1])
+      test_move(player, newPos, board)
+
+    if player.last_result == 'success':
+        player.pos = newPos
+        board[player.pos[0]][player.pos[1]] = 2
+          #print(player.pos)
+    elif player.last_result== 'portal':
+        player.pos = newPos
+        board[player.pos[0]][player.pos[1]] = 2
+        return False
+          #print(player.pos)
+    else:
+        move(player, player.get_decision(), board)
+
         
 while run:
         
-    move(player, player.get_decision())
-
-   #move AI based on player.last_decision
-   
+    value = move(player, player.get_decision(), board)
+    print(board)
     move_total = move_total + 1
+    
+    if value == False:
+        run = False
 
     pygame.display.update()
     clock.tick(3)
@@ -148,4 +132,3 @@ while run:
     
            
 pygame.quit()
-        
