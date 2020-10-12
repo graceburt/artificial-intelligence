@@ -23,7 +23,6 @@ cols = 10
 MARGIN = 5 #this will be the space between boxes
 
 board = np.ones((rows,cols))
-board[0][0] = 5
 board[1: -1, 1: -1] = 0
 
 pygame.init()
@@ -66,69 +65,22 @@ def draw(board):
 
 draw(board)
 
-def test_move(player, newPos, board):
-    
-        if board[newPos[0]][newPos[1]] == 1: 
-        # board[player.pos[0]][player.pos[1]] == 1: #wall
-            print("wall")
-            player.put_result(player.results[1])
-            
-        elif board[newPos[0]][newPos[1]] == 3:
-        #board[player.pos[0]][player.pos[1]] == 3: #portal
-            print("portal")
-            player.put_result(player.results[2])
-            
-        else:
-            print("success")
-            player.put_result(player.results[0])
-            
-def move(player, r, board):
-    
-    print("{} goes {}").format(player.pos, r)
-     
-    if r == "left":
-      newPos = (player.pos[0], player.pos[1]-1)
-      test_move(player, newPos, board)
-          
-    elif r == "right":   
-      newPos = (player.pos[0], player.pos[1]+1)
-      test_move(player, newPos, board)
-      #print(newPos)
-     
-    elif r == "down": 
-      newPos = (player.pos[0]+1, player.pos[1])
-      test_move(player, newPos, board)
-      #print(newPos)
-          
-    elif r == "up":         
-      newPos = (player.pos[0]-1, player.pos[1])
-      test_move(player, newPos, board)
 
-    if player.last_result == 'success':
-        player.pos = newPos
-        board[player.pos[0]][player.pos[1]] = 2
-          #print(player.pos)
-    elif player.last_result== 'portal':
-        player.pos = newPos
-        board[player.pos[0]][player.pos[1]] = 2
-        return False
-          #print(player.pos)
-    else:
-        move(player, player.get_decision(), board)
-
-        
 while run:
         
-    value = move(player, player.get_decision(), board)
+    value = player.spiral(board)
+    print("---------------------------------------------------")
     print(board)
-    move_total = move_total + 1
     
     if value == False:
         run = False
+        
+    #print(board)
+    #move_total = move_total + 1
 
     pygame.display.update()
     clock.tick(3)
     draw(board)
     
-           
+print("It took {} many moves to find portal!").format(move_total)
 pygame.quit()

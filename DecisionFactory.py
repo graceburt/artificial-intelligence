@@ -71,34 +71,94 @@ class DecisionFactory:
 #           else:
 #                       DecisionFactory.put_result(0)
 #        
-    def move(self, r, grid):
-        future_position = grid[self[0]+1][self[1]]
-        DecisionFactory.test_move("left", self, grid, future_position)
-        if self.last_result == "success":
-            self.last_step = grid[self[0]][self[1]]
-            self.position = future_position
-            DecisionFactory.move(self, grid)
+    def test_move(self, future_position, board):
+        
+        if board[future_position[0]][future_position[1]] == 1: 
+        # board[player.pos[0]][player.pos[1]] == 1: #wall
+            print("wall")
+            self.put_result(self.results[1])
+            
+        elif board[future_position[0]][future_position[1]] == 3:
+        #board[player.pos[0]][player.pos[1]] == 3: #portal
+            print("portal")
+            self.put_result(self.results[2])
+            
         else:
-            future_position = grid[self[0]-1][self[1]]
-            DecisionFactory.test_move("up", self, grid)
+            print("success")
+            self.put_result(self.results[0])
+                
+    def spiral(self, grid):
+        #left
+        future_position = (self.pos[0], self.pos[1]-1)
+        print(future_position)
+        self.test_move(future_position, grid)
+        print(grid)
+        if self.last_result == "success":
+            self.last_position = (self.pos[0], self.pos[1])
+            grid[self.last_position[0]][self.last_position[1]] = 1
+            self.pos = future_position
+            grid[self.pos[0]][self.pos[1]] = 2
+            self.spiral(grid)
+        
+        elif self.last_result == "portal":
+            return False
+        
+        #up
+        else:
+            future_position = (self.pos[0]-1, self.pos[1])
+            print(future_position)
+            self.test_move(future_position, grid)
+            print(grid)
             if self.last_result == "success":
-                self.last_step = grid[self[0]][self[1]]
-                self.position = future_position
-                DecisionFactory.move(self, grid)
+                self.last_position = (self.pos[0], self.pos[1])
+                grid[self.last_position[0]][self.last_position[1]] = 1
+                self.pos = future_position
+                grid[self.pos[0]][self.pos[1]] = 2
+                self.spiral(grid)
+            
+            elif self.last_result == "portal":
+                return False
+            
+            #right
             else:
-                future_position = grid[self[0]][self[1]+1]
-                DecisionFactory.test_move(self, "right", grid)
+                future_position = (self.pos[0], self.pos[1]+1)
+                print(future_position)
+                self.test_move(future_position, grid)
+                print(grid)
                 if self.last_result == "success":
-                    self.last_step = grid[self[0]][self[1]]
-                    self.position = future_position
-                    DecisionFactory.move(self, grid)
+                    self.last_position = (self.pos[0], self.pos[1])
+                    grid[self.last_position[0]][self.last_position[1]] = 1
+                    self.pos = future_position
+                    grid[self.pos[0]][self.pos[1]] = 2
+                    self.spiral(grid)
+                
+                elif self.last_result == "portal":
+                    return False
+        
+                #down
                 else:
-                    future_position = grid[self[0]+1][self[1]]
-                    DecisionFactory.test_move("down", self, grid)
+                    future_position = (self.pos[0]+1, self.pos[1])
+                    print(future_position)
+                    self.test_move(future_position, grid)
+                    print(grid)
                     if self.last_result == "success":
-                        self.last_step = grid[self[0]][self[1]]
-                        self.position = future_position
-                        DecisionFactory.move(self, grid)
+                        self.last_position = (self.pos[0], self.pos[1])
+                        grid[self.last_position[0]][self.last_position[1]] = 1
+                        self.pos = future_position
+                        grid[self.pos[0]][self.pos[1]] = 2
+                        self.spiral(grid)
+                    
+                    elif self.last_result == "portal":
+                        return False
+                    
+                    #recurse
                     else:
-                        self.position = self.last_position
-                        DecisionFactory.move(self, grid)
+                        print("RECURSE")
+                        grid[self.last_position[0]][self.last_position[1]] = 0
+                        self.pos = self.last_position
+                        return False
+                        #self.spiral(grid)
+                    
+                    
+                    
+                    
