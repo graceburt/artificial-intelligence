@@ -95,7 +95,7 @@ class DecisionFactory:
         print(grid)
         if self.last_result == "success":
             self.last_position = (self.pos[0], self.pos[1])
-            grid[self.last_position[0]][self.last_position[1]] = 1
+            grid[self.last_position[0]][self.last_position[1]] = 1 #set previous position to wall
             self.pos = future_position
             grid[self.pos[0]][self.pos[1]] = 2
             self.spiral(grid)
@@ -156,8 +156,7 @@ class DecisionFactory:
                         print("RECURSE")
                         grid[self.last_position[0]][self.last_position[1]] = 0
                         self.pos = self.last_position
-                        return False
-                        #self.spiral(grid)
+                        self.spiral(grid)
                     
                     
                     
